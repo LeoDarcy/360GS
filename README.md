@@ -36,10 +36,6 @@ class="center">
 - [ ] Release the code.
 
 
-## Installation
-
-Please follow the instruction in [op43gs](https://github.com/LetianHuang/op43dgs/blob/main/README.md).
-
 ## Dataset
 
 
