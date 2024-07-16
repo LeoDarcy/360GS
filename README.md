@@ -35,7 +35,7 @@ class="center">
 
 
 ## TODO List
-- [ ] Dataset and preprocess.
+- [ ] Dataset preparation.
 - [ ] Release the code.
 
 
