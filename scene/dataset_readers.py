@@ -279,7 +279,7 @@ def readNerfSyntheticInfo(path, white_background, eval, extension=".png"):
 """)
 
 def readCamerasFromPanorama(room_id, iamge_root, cam_root, frame_ids, extenstion, neg_yz, video_ratio=1, highlight_args=None):
-    W, H = 512, 512 # 1024, 512
+    W, H = 1024, 512 # 1024, 512
     cam_infos = []
 
     if highlight_args is not None:
