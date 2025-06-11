@@ -1,6 +1,6 @@
 <p align="center">
 <h1 align="center"><strong>360-GS: Layout-guided Panoramic Gaussian Splatting For Indoor Roaming</strong></h1>
-<h3 align="center">3DV 2024</h3>
+<h3 align="center">3DV 2025</h3>
 <p align="center">
           <span class="author-block">
               <a href="https://scholar.google.com/citations?user=VmPQ6akAAAAJ&hl=zh-CN">Jiayang Bai</a></span>    
