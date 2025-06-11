@@ -27,7 +27,8 @@ from scene.gaussian_model import BasicPointCloud
 ------------------------------- for Matterport Dataset ------------------------------------------
 """)
 from scene.layout import Layout
-from scene.c2w_slerp import c2w_slerp
+# from scene.c2w_slerp import c2w_slerp
+c2w_slerp = None
 (r"""
 ------------------------------- for Matterport Dataset ------------------------------------------
 """)

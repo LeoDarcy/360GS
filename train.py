@@ -9,8 +9,6 @@
 # For inquiries contact  george.drettakis@inria.fr
 #
 
-# Layout Guided written by Nanjing University
- 
 import os
 import torch
 from random import randint
@@ -30,13 +28,6 @@ try:
 except ImportError:
     TENSORBOARD_FOUND = False
 
-(r"""
-------------------------------- For Layout Guided ------------------------------------------
-""")
-from scene.repainting import repaintingTypeCallbacks
-(r"""
-------------------------------- For Layout Guided ------------------------------------------
-""")
 
 def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoint_iterations, checkpoint, debug_from):
     first_iter = 0
@@ -45,21 +36,12 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
     (r"""
     ------------------------------- For Layout Guided ------------------------------------------
     """)
-    if "rapainting_module" in dataset.__dict__:
-        repainting_module = dataset.repainting_module
-    else:
-        repainting_module = "None"
-    gaussians = GaussianModel(dataset.sh_degree, RepaintingModule=repaintingTypeCallbacks[repainting_module])
+    gaussians = GaussianModel(dataset.sh_degree, use_layout_densify=dataset.use_layout_densify)
     (r"""
     ------------------------------- For Layout Guided ------------------------------------------
     """)
-    
-    # (r""" ------------------------ resolution -----------------------------""")
-    # # scene = Scene(dataset, gaussians)
-    # resolution_scales = [16, 8, 4, 2, 1]
-    # resolution_id = 0
-    # scene = Scene(dataset, gaussians, resolution_scales=resolution_scales)
-    # (r""" ------------------------ resolution -----------------------------""")
+
+
     scene = Scene(dataset, gaussians)
 
     gaussians.training_setup(opt)
@@ -102,14 +84,6 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
             gaussians.oneupSHdegree()
 
         # Pick a random Camera
-        # (r""" ------------------------ resolution -----------------------------""")
-        # if iteration % 5000 == 0 and resolution_id + 1 < len(resolution_scales):
-        #     resolution_id += 1
-        #     print(f"resolution: {resolution_scales[resolution_id]}")
-        #     viewpoint_stack = None
-        # if not viewpoint_stack:
-        #     viewpoint_stack = scene.getTrainCameras(resolution_scales[resolution_id]).copy()
-        # (r""" ------------------------ resolution -----------------------------""")
         if not viewpoint_stack:
             viewpoint_stack = scene.getTrainCameras().copy()
 
@@ -130,13 +104,23 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
         # loss = Ll1
         loss = (1.0 - opt.lambda_dssim) * Ll1 + opt.lambda_dssim * (1.0 - ssim(image, gt_image)) # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
         (r"""
         ------------------------------- For Layout Guided ------------------------------------------
         """)
-        if opt.lambda_dscale > 0:
-            loss += opt.lambda_dscale * gaussians.get_scaling.mean()
+        # if iteration % 100 == 0:
+        #     print(f"\ngaussians.get_deltaxyznormals_proj.norm(): {gaussians.get_deltaxyznormals_proj.norm(dim=-1)}")
+        #     print(f"gaussians.get_deltaxyz.norm(): {gaussians.get_deltaxyz.norm(dim=-1)}")
+        #     print(f"gaussians._xyz0: {gaussians._xyz0}")
+        if dataset.lambda_dxyz > 0:
+            loss += dataset.lambda_dxyz * gaussians.get_deltaxyz_loss
             if iteration % 500 == 0:
-                print(f"scale_loss: {gaussians.get_scaling.mean().detach().cpu().item()}")
+                print(f"xyz_loss: {dataset.lambda_dxyz * gaussians.get_deltaxyz_loss.detach()}")
+        if dataset.lambda_wscale > 0:
+            loss += dataset.lambda_wscale * gaussians.get_worldscale_loss
+            if iteration % 500 == 0:
+                print(f"scale_loss: {dataset.lambda_wscale * gaussians.get_worldscale_loss.detach()}")
+
         (r"""
         ------------------------------- For Layout Guided ------------------------------------------
         """)
@@ -166,17 +150,10 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
                 gaussians.max_radii2D[visibility_filter] = torch.max(gaussians.max_radii2D[visibility_filter], radii[visibility_filter])
                 gaussians.add_densification_stats(viewspace_point_tensor, visibility_filter)
 
-
                 if iteration > opt.densify_from_iter and iteration % opt.densification_interval == 0:
-                    (r"""
-                    ------------------------------- For Layout Guided ------------------------------------------
-                    """)
-                    size_threshold = 1 if iteration > opt.opacity_reset_interval else None # 20 for 3d gs
-                    (r"""
-                    ------------------------------- For Layout Guided ------------------------------------------
-                    """)
+                    size_threshold = 20 if iteration > opt.opacity_reset_interval else None
                     gaussians.densify_and_prune(opt.densify_grad_threshold, 0.005, scene.cameras_extent, size_threshold)
-                
+                    
                 if iteration % opt.opacity_reset_interval == 0 or (dataset.white_background and iteration == opt.densify_from_iter):
                     gaussians.reset_opacity()
 

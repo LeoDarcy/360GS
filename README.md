@@ -1,20 +1,20 @@
 <p align="center">
 <h1 align="center"><strong>360-GS: Layout-guided Panoramic Gaussian Splatting For Indoor Roaming</strong></h1>
-
+<h3 align="center">3DV 2024</h3>
 <p align="center">
           <span class="author-block">
-              <a href="https://scholar.google.com/citations?user=VmPQ6akAAAAJ&hl=zh-CN">Jiayang Bai</a></span>&nbsp;&nbsp;&nbsp;&nbsp;
+              <a href="https://scholar.google.com/citations?user=VmPQ6akAAAAJ&hl=zh-CN">Jiayang Bai</a></span>    
             <span class="author-block">
-              <a href="https://letianhuang.github.io/">Letian Huang</a></span>&nbsp;&nbsp;&nbsp;&nbsp;
+              <a href="https://letianhuang.github.io/">Letian Huang</a></span>    
             <span class="author-block">
               <a href="https://scholar.google.com.hk/citations?user=Sx4PQpQAAAAJ&hl=en">Jie Guo<sup>*</sup></a>
-            </span>&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>    
             <span class="author-block">
               <a href="http://www.njumeta.com/">Wen Gong</a>
-            </span>&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>    
             <span class="author-block">
               <a href="http://www.njumeta.com/liyq/">Yuanqi Li</a>
-            </span>&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>    
             <span class="author-block">
               <a href="https://cs.nju.edu.cn/ywguo/index.htm">Yanwen Guo</a>
             </span>
@@ -33,14 +33,39 @@
 class="center">
 </p>
 
-
 ## TODO List
-- [ ] Dataset preparation.
-- [ ] Release the code.
 
+- [x] Dataset preparation.
+
+- [x] Release the code.
 
 ## Dataset
+
 Please read the [README](DataPreparation/README.md).
+
+## Installation
+
+Clone the repository and create an anaconda environment: 
+
+```shell
+git clone https://github.com/LeoDarcy/360GS.git --recursive
+cd 360GS/submodules/
+
+SET DISTUTILS_USE_SDK=1 # Windows only
+conda env create --file environment.yml
+conda activate op43dgs
+pip install submodules/diff-gaussian-rasterization-panorama
+```
+
+## Train
+
+python train.py -s
+
+while withholding a test set for evaluation, use the `--eval` flag. This way, you can render training/test sets and produce error metrics as follows:
+
+```shell
+python train.py -s <path to dataset> --room_id <room_id> --use_layout --use_layout_densify --lambda_dxyz 0.01 --eval 
+```
 
 ## Acknowledgements
 
